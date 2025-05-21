@@ -29,9 +29,9 @@
     }
 
     .dark-mode {
-      --bg-color: #121212;
-      --text-color: #f0f0f0;
-      --peg-color: #00bfff;
+      --bg-color: #1d1d1d;
+      --text-color: #c4c4c4;
+      --peg-color: #5900ff;
     }
 
     .container {
@@ -82,6 +82,7 @@
     button {
       padding: 10px 20px;
       font-size: 16px;
+      border-radius: 50px;
       margin: 5px;
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
@@ -99,7 +100,7 @@
     <h1>Jogo Resta 1</h1>
     <div class="board" id="board"></div>
     <button onclick="resetBoard()">🔁 Reiniciar</button>
-    <button onclick="toggleDarkMode()">🌙 Alternar Modo Escuro</button>
+    <button onclick="toggleDarkMode()">🌙</button>
   </div>
 
   <script>
@@ -198,7 +199,7 @@
       const remaining = board.filter(Boolean).length;
       if (remaining === 1) {
         setTimeout(() => {
-          alert("Parabéns, Senhor Valério! Restou apenas uma peça.");
+          alert("Parabéns! Restou apenas uma peça.");
         }, 100);
       }
     }
