@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resta 1</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: sans-serif;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(7, 50px);
+      grid-template-rows: repeat(7, 50px);
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 50px;
+      height: 50px;
+      background-color: #ccc;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .invalid {
+      background-color: transparent;
+      cursor: default;
+    }
+
+    .peg {
+      width: 30px;
+      height: 30px;
+      background-color: #007bff;
+      border-radius: 50%;
+    }
+
+    .selected {
+      outline: 3px solid red;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Resta 1</h1>
+    <div class="board" id="board"></div>
+    <button onclick="resetBoard()">Reiniciar</button>
+  </div>
+
+  <script>
+    const size = 7;
+    const boardElement = document.getElementById('board');
+    let board = [];
+    let selected = null;
+
+    const invalidCells = [
+      [0, 0], [0, 1], [1, 0], [1, 1],
+      [0, 5], [0, 6], [1, 5], [1, 6],
+      [5, 0], [5, 1], [6, 0], [6, 1],
+      [5, 5], [5, 6], [6, 5], [6, 6]
+    ];
+
+    function index(row, col) {
+      return row * size + col;
+    }
+
+    function createBoard() {
+      board = [];
+      boardElement.innerHTML = '';
+
+      for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          const i = index(row, col);
+
+          if (invalidCells.some(([r, c]) => r === row && c === col)) {
+            cell.classList.add('invalid');
+            board.push(null);
+          } else {
+            const peg = document.createElement('div');
+            peg.classList.add('peg');
+            cell.appendChild(peg);
+            board.push(true);
+          }
+
+          cell.addEventListener('click', () => handleClick(cell, row, col));
+          boardElement.appendChild(cell);
+        }
+      }
+
+      const center = Math.floor(size * size / 2);
+      board[center] = null;
+      boardElement.children[center].innerHTML = '';
+    }
+
+    function handleClick(cell, row, col) {
+      const i = index(row, col);
+
+      if (selected) {
+        const [selRow, selCol] = selected;
+        const selIndex = index(selRow, selCol);
+        const midRow = (row + selRow) / 2;
+        const midCol = (col + selCol) / 2;
+        const midIndex = index(midRow, midCol);
+
+        const isStraight = (row === selRow && Math.abs(col - selCol) === 2) ||
+                           (col === selCol && Math.abs(row - selRow) === 2);
+
+        if (isStraight && !board[i] && board[midIndex]) {
+          board[i] = board[selIndex];
+          board[selIndex] = null;
+          board[midIndex] = null;
+
+          boardElement.children[i].innerHTML = '<div class="peg"></div>';
+          boardElement.children[selIndex].innerHTML = '';
+          boardElement.children[midIndex].innerHTML = '';
+
+          boardElement.children[selIndex].classList.remove('selected');
+          selected = null;
+
+          checkWin();
+        } else {
+          boardElement.children[selIndex].classList.remove('selected');
+          selected = null;
+        }
+      } else if (board[i]) {
+        selected = [row, col];
+        cell.classList.add('selected');
+      }
+    }
+
+    function resetBoard() {
+      createBoard();
+      selected = null;
+    }
+
+    function checkWin() {
+      const remaining = board.filter(Boolean).length;
+      if (remaining === 1) {
+        setTimeout(() => {
+          alert("Parabéns! Restou apenas uma peça!");
+        }, 100);
+      }
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
